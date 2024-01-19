@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import WaveSurfer from "wavesurfer.js";
+import { WaveSurferOptions } from "wavesurfer.js";
 
 export const useHasMounted = () => {
   const [hasMounted, setHasMounted] = useState<boolean>(false);
@@ -9,17 +11,79 @@ export const useHasMounted = () => {
   return hasMounted;
 };
 
-// export const useScript = (url: string) => {
-//   useEffect(() => {
-//     const script = document.createElement("script");
+export const useWaveSurfer = (
+  containerRef: React.RefObject<HTMLDivElement>,
+  options: Omit<WaveSurferOptions, "container">
+) => {
+  const [waveSurfer, setWaveSurfer] = useState<WaveSurfer | null>(null);
+  useEffect(() => {
+    console.log("-------- zoooo hookkkkkkkkkk");
+    if (!containerRef.current) return;
+    const ws = WaveSurfer.create({
+      ...options,
+      container: containerRef.current,
+      renderFunction: (channels, ctx) => {
+        const { width, height } = ctx.canvas;
+        const barWidth = options.barWidth || 2;
+        const barGap = options.barGap || 1;
+        const barCount = Math.floor(width / (barWidth + barGap));
+        const step = Math.floor(channels[0].length / barCount);
 
-//     script.src = url;
-//     script.async = true;
+        const topPartHeight = height * 0.7; // Define top part height
+        const bottomPartHeight = height * 0.3; // Define bottom part height
 
-//     document.body.appendChild(script);
+        ctx.beginPath();
 
-//     return () => {
-//       document.body.removeChild(script);
-//     };
-//   }, [url]);
-// };
+        for (let i = 0; i < barCount; i++) {
+          let sumTop = 0;
+          let sumBottom = 0;
+
+          for (let j = 0; j < step; j++) {
+            const index = i * step + j;
+            const topValue = Math.abs(channels[0][index] || 0);
+            const bottomValue = Math.abs(channels[1]?.[index] || 0);
+
+            sumTop += topValue;
+            sumBottom += bottomValue;
+          }
+
+          const avgTop = sumTop / step;
+          const avgBottom = sumBottom / step;
+          const barHeight = (avgTop + avgBottom) * 1.2;
+          let yTop = topPartHeight - barHeight * topPartHeight;
+          let yBottom = topPartHeight + barHeight * bottomPartHeight;
+
+          if (options.barAlign === "top") {
+            yTop = 0;
+            yBottom = bottomPartHeight;
+          } else if (options.barAlign === "bottom") {
+            yTop = height - topPartHeight;
+            yBottom = height;
+          }
+
+          ctx.rect(
+            i * (barWidth + barGap),
+            yTop,
+            barWidth,
+            barHeight * topPartHeight
+          );
+          ctx.rect(
+            i * (barWidth + barGap),
+            yBottom - barHeight * bottomPartHeight,
+            barWidth,
+            barHeight * bottomPartHeight
+          );
+        }
+
+        ctx.fill();
+        ctx.closePath();
+      },
+    });
+    setWaveSurfer(ws);
+    return () => {
+      ws.destroy();
+    };
+  }, [options, containerRef]);
+
+  return waveSurfer;
+};
