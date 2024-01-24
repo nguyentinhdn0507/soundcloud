@@ -15,13 +15,14 @@ import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import Container from "@mui/material/Container";
-import logo from "../../../assets/download.png";
+import logo from "@/assets/download.png";
 import Image from "next/image";
 import { Avatar } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
-//styled-component
+import { useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
+import { signOut } from "next-auth/react";
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -109,7 +110,14 @@ export default function AppHeader() {
           Profile
         </Link>
       </MenuItem>
-      <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+      <MenuItem
+        onClick={() => {
+          handleMenuClose();
+          signOut();
+        }}
+      >
+        Logout
+      </MenuItem>
     </Menu>
   );
 
@@ -166,9 +174,9 @@ export default function AppHeader() {
   );
   const handleRedirectHome = () => {
     router.push("/");
-    
   };
- 
+  const { data: session } = useSession();
+  console.log("checkkkkkkkkk", session);
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" sx={{ background: "#f78500" }}>
@@ -203,10 +211,20 @@ export default function AppHeader() {
                 },
               }}
             >
-              <Link href={"/playlist"}>Playlist</Link>
-              <Link href={"/like"}>Likes</Link>
-              <span>Upload</span>
-              <Avatar onClick={handleProfileMenuOpen}>NC</Avatar>
+              {session ? (
+                <>
+                  <Link href={"/playlist"}>Playlist</Link>
+                  <Link href={"/like"}>Likes</Link>
+                  <span>Upload</span>
+                  <Avatar onClick={handleProfileMenuOpen}>NC</Avatar>
+                </>
+              ) : (
+                <>
+                  <Link href={"/auth/signin"} onClick={() => signIn()}>
+                    Login
+                  </Link>
+                </>
+              )}
             </Box>
             <Box sx={{ display: { xs: "flex", md: "none" } }}>
               <IconButton

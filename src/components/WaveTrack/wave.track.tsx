@@ -100,10 +100,15 @@ const WaveTrack = () => {
   }, []);
   const waveSurfer = useWaveSurfer(containerRef, optionsMemo);
   const [isPlaying, setIsPlaying] = useState<Boolean>(false);
-  useEffect(() => {
-    console.log("-------- zooooooooo");
+  const waveSurferPlay = () => {
     if (!waveSurfer) return;
-    console.log("waveSurfer", waveSurfer);
+    waveSurfer.on("ready", () => {
+      waveSurfer.play();
+    });
+  };
+  useEffect(() => {
+    if (!waveSurfer) return;
+    waveSurferPlay();
     setIsPlaying(false);
     const hover = hoverRef.current!;
     const waveForm = containerRef.current!;
@@ -124,10 +129,6 @@ const WaveTrack = () => {
         // setTime(formatTime(currentTime));
         if (timeRef.current)
           timeRef.current.innerText = formatTime(currentTime);
-      }),
-
-      waveSurfer.once("interaction", () => {
-        waveSurfer.play();
       }),
     ];
     return () => {

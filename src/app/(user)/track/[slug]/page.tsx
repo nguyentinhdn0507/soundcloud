@@ -1,6 +1,6 @@
 "use client";
-import WaveTrack2 from "@/app/components/WaveTrack/watrack";
-import WaveTrack from "@/app/components/WaveTrack/wave.track";
+import WaveTrack2 from "@/components/WaveTrack/watrack";
+import WaveTrack from "@/components/WaveTrack/wave.track";
 import { Container } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import React from "react";
