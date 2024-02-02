@@ -1,7 +1,7 @@
-import AppFooter from "@/components/Footer/app.footer";
-import AppHeader from "@/components/Header/app.header";
 import ThemeRegistry from "@/components/theme-registry/theme.registry";
 import NextAuthWrapper from "@/lib/next.auth.wrapper";
+import { TrackContextProvider } from "@/lib/track.wrapper";
+import { ToastProvider } from "@/utils/Toast";
 
 export const metadata = {
   title: "Next.js",
@@ -17,7 +17,11 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ThemeRegistry>
-          <NextAuthWrapper>{children}</NextAuthWrapper>
+          <NextAuthWrapper>
+            <ToastProvider>
+              <TrackContextProvider>{children}</TrackContextProvider>
+            </ToastProvider>
+          </NextAuthWrapper>
         </ThemeRegistry>
       </body>
     </html>

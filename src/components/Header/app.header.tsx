@@ -17,12 +17,12 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import Container from "@mui/material/Container";
 import logo from "@/assets/download.png";
 import Image from "next/image";
-import { Avatar } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { signIn } from "next-auth/react";
 import { signOut } from "next-auth/react";
+import ActiveLink from "./active.link";
+import { fetchDefaultImages } from "@/utils/api";
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -70,7 +70,7 @@ export default function AppHeader() {
   const router = useRouter();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
+  const { data: session } = useSession();
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -101,7 +101,7 @@ export default function AppHeader() {
     >
       <MenuItem>
         <Link
-          href={"/profile"}
+          href={`/profile/${session?.user?._id}`}
           style={{
             color: "unset",
             textDecoration: "none",
@@ -175,8 +175,6 @@ export default function AppHeader() {
   const handleRedirectHome = () => {
     router.push("/");
   };
-  const { data: session } = useSession();
-  console.log("checkkkkkkkkk", session);
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" sx={{ background: "#f78500" }}>
@@ -208,21 +206,32 @@ export default function AppHeader() {
                 " > a ": {
                   color: "unset",
                   textDecoration: "unset",
+                  "&.active": {
+                    backgroundColor: "#3b4a59",
+                    color: "#cefaff",
+                    borderRadius: "4px",
+                  },
                 },
               }}
             >
               {session ? (
                 <>
-                  <Link href={"/playlist"}>Playlist</Link>
-                  <Link href={"/like"}>Likes</Link>
-                  <span>Upload</span>
-                  <Avatar onClick={handleProfileMenuOpen}>NC</Avatar>
+                  <ActiveLink href={"/playlist"}>Playlist</ActiveLink>
+                  <ActiveLink href={"/like"}>Likes</ActiveLink>
+                  <ActiveLink href={"/track/upload"}>Upload</ActiveLink>
+                  <img
+                    onClick={handleProfileMenuOpen}
+                    style={{
+                      height: 35,
+                      width: 35,
+                      cursor: "pointer",
+                    }}
+                    src={fetchDefaultImages(session.user.type)}
+                  />
                 </>
               ) : (
                 <>
-                  <Link href={"/auth/signin"} onClick={() => signIn()}>
-                    Login
-                  </Link>
+                  <Link href={"auth/signin"}>Login</Link>
                 </>
               )}
             </Box>

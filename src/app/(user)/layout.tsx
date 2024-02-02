@@ -14,6 +14,7 @@ export default function RootLayout({
     <>
       <AppHeader />
       {children}
+      <div style={{ marginTop: "100px" }}></div>
       <AppFooter />
     </>
   );

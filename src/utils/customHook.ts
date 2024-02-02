@@ -15,9 +15,8 @@ export const useWaveSurfer = (
   containerRef: React.RefObject<HTMLDivElement>,
   options: Omit<WaveSurferOptions, "container">
 ) => {
-  const [waveSurfer, setWaveSurfer] = useState<WaveSurfer | null>(null);
+  const [waveSurfer, setWaveSurfer] = useState<WaveSurfer | null>();
   useEffect(() => {
-    console.log("-------- zoooo hookkkkkkkkkk");
     if (!containerRef.current) return;
     const ws = WaveSurfer.create({
       ...options,
@@ -84,6 +83,5 @@ export const useWaveSurfer = (
       ws.destroy();
     };
   }, [options, containerRef]);
-
   return waveSurfer;
 };
