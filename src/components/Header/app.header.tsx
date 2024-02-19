@@ -83,7 +83,7 @@ export default function AppHeader() {
     setAnchorEl(null);
     handleMobileMenuClose();
   };
-
+  
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
@@ -113,7 +113,7 @@ export default function AppHeader() {
       <MenuItem
         onClick={() => {
           handleMenuClose();
-          signOut();
+          signOut({ callbackUrl: "/" });
         }}
       >
         Logout

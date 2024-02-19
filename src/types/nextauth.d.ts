@@ -7,6 +7,7 @@ interface IUser {
   isVerify: boolean;
   type: string;
   role: string;
+  picture: string;
 }
 declare module "next-auth/jwt" {
   interface JWT {

@@ -4,7 +4,9 @@ import { AuthOptions } from "next-auth";
 import { sendRequest } from "@/utils/api";
 import { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import dayjs from "dayjs";
+import { signOut } from "next-auth/react";
 const url = process.env.NEXT_PUBLIC_RENDER;
 
 async function refreshAccessToken(token: JWT) {
@@ -62,6 +64,10 @@ export const authOptions: AuthOptions = {
     GithubProvider({
       clientId: process.env.GITHUB_ID!,
       clientSecret: process.env.GITHUB_SECRET!,
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_ID!,
+      clientSecret: process.env.GOOGLE_SECRET!,
     }),
   ],
   callbacks: {
@@ -125,5 +131,4 @@ export const authOptions: AuthOptions = {
   },
 };
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };

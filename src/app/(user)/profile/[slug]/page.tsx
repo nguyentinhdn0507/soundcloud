@@ -1,16 +1,29 @@
+import ButtonCommon from "@/components/Button/button.common";
 import ProfileTracks from "@/components/ProfileTrack/profile.track";
 import { sendRequest } from "@/utils/api";
 import { Container } from "@mui/material";
 import Grid from "@mui/material/Grid";
 
-const ProfileUserPage = async ({ params }: { params: { slug: string } }) => {
+const ProfileUserPage = async ({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams: {
+    page: number;
+    pageSize: number;
+  };
+}) => {
   const slug = params.slug;
-
+  const current = searchParams?.page ?? 1;
+  const pageSize = 5;
   const data = await sendRequest<IBackendRes<IModelPaginate<ITrackTop[]>>>({
-    url: "http://localhost:8000/api/v1/tracks/users?current=2&pageSize=10",
+    url: `http://localhost:8000/api/v1/tracks/users`,
     method: "POST",
     body: { id: slug },
     queryParams: {
+      current,
+      pageSize,
       sort: "-createdAt",
     },
     nextOption: {
@@ -29,6 +42,12 @@ const ProfileUserPage = async ({ params }: { params: { slug: string } }) => {
           );
         })}
       </Grid>
+      <ButtonCommon
+        text="Load More"
+        currentPage={current}
+        slug={slug}
+        pageSize={pageSize}
+      />
     </Container>
   );
 };
